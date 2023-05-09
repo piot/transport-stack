@@ -1,0 +1,28 @@
+depsversion = "0.0.0"
+
+name = "piot/transport-stack"
+version = "0.0.0"
+
+[[dependencies]]
+name = "piot/udp-server-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/udp-server-connections"
+version = "*"
+
+[[dependencies]]
+name = "piot/udp-client-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/hazy-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/conclave-client-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/udp-server-connections"
+version = "*"
