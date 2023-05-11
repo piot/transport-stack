@@ -10,6 +10,7 @@
 #include <transport-stack/conclave.h>
 #include <udp-client/udp_client.h>
 #include <udp-transport/multi_single.h>
+#include <udp-connections-client/client.h>
 
 struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
@@ -22,11 +23,13 @@ typedef struct TransportStackSingle {
     UdpTransportInOut singleTransport;
     Clog log;
     TransportStackMode mode;
+    UdpConnectionsClient connectionsClient;
 } TransportStackSingle;
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,
                               struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log);
 int transportStackSingleConnect(TransportStackSingle* self, const char* host, size_t port);
+bool transportStackSingleIsConnected(const TransportStackSingle* self);
 void transportStackSingleUpdate(TransportStackSingle* self);
 
 #endif

@@ -29,7 +29,13 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
             setup.log.constantPrefix = "singleUdp";
             transportStackConclaveInit(&self->conclave, setup);
             transportStackConclaveEstablish(&self->conclave, host, port);
-            self->singleTransport = self->conclave.hazyTransport.transport;
+            CLOG_C_DEBUG(&self->log, "udp connections client is put on top of hazy internet emulator");
+            int initErr = udpConnectionsClientInit(&self->connectionsClient, self->conclave.hazyTransport.transport,
+                                                   self->log);
+            if (initErr < 0) {
+                return initErr;
+            }
+            self->singleTransport = self->connectionsClient.transport;
         } break;
         case TransportStackModeConclave: {
             CLOG_C_DEBUG(&self->log, "connecting conclave to '%s' %d", host, port)
@@ -44,10 +50,25 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
     return 0;
 }
 
+bool transportStackSingleIsConnected(const TransportStackSingle* self)
+{
+    switch (self->mode) {
+        case TransportStackModeLocalUdp:
+            return self->connectionsClient.phase == UdpConnectionsClientPhaseConnected;
+            break;
+        case TransportStackModeConclave:
+            return false;
+            break;
+        default:
+            CLOG_C_ERROR(&self->log, "unknown mode")
+    }
+}
+
 void transportStackSingleUpdate(TransportStackSingle* self)
 {
     switch (self->mode) {
         case TransportStackModeLocalUdp: {
+            udpConnectionsClientUpdate(&self->connectionsClient);
             hazyDatagramTransportInOutUpdate(&self->conclave.hazyTransport);
         } break;
     }

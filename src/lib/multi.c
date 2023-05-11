@@ -26,6 +26,13 @@ int transportStackMultiListen(TransportStackMulti* self, const char* host, size_
 {
     switch (self->mode) {
         case TransportStackModeConclave: {
+            TransportStackConclaveSetup conclaveSetup;
+            conclaveSetup.log = self->log;
+            conclaveSetup.allocator = self->allocator;
+            conclaveSetup.allocatorWithFree = self->allocatorWithFree;
+            conclaveSetup.mode = TransportStackModeConclave;
+            conclaveSetup.username = "Piot";
+            transportStackConclaveInit(&self->conclave, conclaveSetup);
         } break;
         case TransportStackModeLocalUdp: {
             int errorCode = udpServerInit(&self->udpServer, port, false);
@@ -35,7 +42,7 @@ int transportStackMultiListen(TransportStackMulti* self, const char* host, size_
             }
             CLOG_C_DEBUG(&self->log, "listening on UDP port %d", port);
 
-            udpServerConnectionsInit(&self->udpServerConnections, &self->udpServer);
+            udpServerConnectionsInit(&self->udpServerConnections, &self->udpServer, self->log);
             CLOG_C_DEBUG(&self->log, "UDP multi connections server is initialized");
 
             self->multiTransport = self->udpServerConnections.multiTransport;

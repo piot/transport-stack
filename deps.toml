@@ -26,3 +26,7 @@ version = "*"
 [[dependencies]]
 name = "piot/udp-server-connections"
 version = "*"
+
+[[dependencies]]
+name = "piot/udp-connections-client-c"
+version = "*"

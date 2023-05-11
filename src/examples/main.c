@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     (void) argv;
 
     g_clog.log = clog_console;
-    g_clog.level = CLOG_TYPE_VERBOSE;
+    g_clog.level = CLOG_TYPE_DEBUG;
 
     CLOG_VERBOSE("transport stack example start")
 
@@ -44,23 +44,33 @@ int main(int argc, char* argv[])
 
     transportStackSingleInit(&single, allocator, allocatorWithFree, TransportStackModeLocalUdp, singleLog);
     transportStackSingleConnect(&single, "127.0.0.1", 27003);
+#define IN_BUF_SIZE_OCTET_COUNT (1200U)
+    uint8_t targetBuf[IN_BUF_SIZE_OCTET_COUNT];
 
-    udpTransportSend(&single.singleTransport, "Hello", 6);
-
-    for (size_t i = 0; i < 2; ++i) {
-        CLOG_INFO("waiting...")
-        sleep(1);
+    uint16_t sendTick = 0;
+    for (size_t i = 0; i < 50; ++i) {
+        usleep(16 * 1000);
         transportStackSingleUpdate(&single);
+        int received = udpTransportReceive(&single.singleTransport, targetBuf, IN_BUF_SIZE_OCTET_COUNT);
+        if (received < 0) {
+            return received;
+        }
+        if (transportStackSingleIsConnected(&single)) {
+
+            tc_snprintf(targetBuf, IN_BUF_SIZE_OCTET_COUNT, "Hello %04X", sendTick);
+            sendTick++;
+            CLOG_INFO("sending '%s' from single to multi transport", targetBuf)
+
+            udpTransportSend(&single.singleTransport, targetBuf, tc_strlen(targetBuf)+ 1);
+        }
         transportStackMultiUpdate(&multi);
+        int foundConnectionIndex;
+        int octetCount = datagramTransportMultiReceive(&multi.multiTransport, &foundConnectionIndex, targetBuf,
+                                                       IN_BUF_SIZE_OCTET_COUNT);
+        if (octetCount > 0) {
+            CLOG_INFO("received '%s' (octetCount:%d) on multi transport, from single connection %d", targetBuf, octetCount, foundConnectionIndex);
+        }
     }
-
-    int foundConnectionIndex;
-    uint8_t targetBuf[16];
-    const size_t targetBufSize = 16;
-
-    int octetCount = datagramTransportMultiReceive(&multi.multiTransport, &foundConnectionIndex, targetBuf,
-                                                   targetBufSize);
-    CLOG_INFO("received %d from connection %d", octetCount, foundConnectionIndex);
 
     imprintDefaultSetupDestroy(&memory);
 }
