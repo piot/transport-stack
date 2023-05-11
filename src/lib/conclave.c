@@ -48,6 +48,8 @@ int transportStackConclaveInit(TransportStackConclave* self, TransportStackConcl
     setup.username = conclaveSetup.username;
     clvClientRealizeInit(&self->conclaveClient, &setup);
 
+    transportStackConclaveSetInternetSimulationMode(self, TransportStackInternetSimulationModeGood);
+
     return 0;
 }
 
@@ -67,4 +69,27 @@ void transportStackConclaveUpdate(TransportStackConclave* self)
     if (self->mode == TransportStackModeConclave) {
         clvClientRealizeUpdate(&self->conclaveClient, monotonicTimeMsNow());
     }
+}
+
+void transportStackConclaveSetInternetSimulationMode(TransportStackConclave* self,
+                                                     TransportStackInternetSimulationMode mode)
+{
+    HazyConfig config;
+    switch (mode) {
+        case TransportStackInternetSimulationModeGood:
+            CLOG_C_DEBUG(&self->log, "internet simulation: good")
+            config = hazyConfigGoodCondition();
+            break;
+        case TransportStackInternetSimulationModeRecommended:
+            CLOG_C_DEBUG(&self->log, "internet simulation: recommended")
+            config = hazyConfigRecommended();
+            break;
+        case TransportStackInternetSimulationModeWorstCase:
+            CLOG_C_DEBUG(&self->log, "internet simulation: worst case")
+            config = hazyConfigWorstCase();
+            break;
+    }
+    self->internetSimulationMode = mode;
+
+    hazySetConfig(&self->hazyTransport.hazy, config);
 }

@@ -11,6 +11,12 @@
 #include <udp-client/udp_client.h>
 #include <udp-transport/multi_single.h>
 
+typedef enum TransportStackInternetSimulationMode {
+    TransportStackInternetSimulationModeGood,
+    TransportStackInternetSimulationModeRecommended,
+    TransportStackInternetSimulationModeWorstCase
+} TransportStackInternetSimulationMode;
+
 typedef struct TransportStackConclave {
     ClvClientRealize conclaveClient;
     UdpClientSocket udpClient;
@@ -18,6 +24,7 @@ typedef struct TransportStackConclave {
     TransportStackMode mode;
     HazyDatagramTransportInOut hazyTransport;
     Clog log;
+    TransportStackInternetSimulationMode internetSimulationMode;
 } TransportStackConclave;
 
 typedef struct TransportStackConclaveSetup {
@@ -31,5 +38,6 @@ typedef struct TransportStackConclaveSetup {
 int transportStackConclaveInit(TransportStackConclave* self, TransportStackConclaveSetup setup);
 int transportStackConclaveEstablish(TransportStackConclave* self, const char* host, size_t port);
 void transportStackConclaveUpdate(TransportStackConclave* self);
+void transportStackConclaveSetInternetSimulationMode(TransportStackConclave* self, TransportStackInternetSimulationMode mode);
 
 #endif

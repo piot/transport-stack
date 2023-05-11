@@ -73,3 +73,9 @@ void transportStackSingleUpdate(TransportStackSingle* self)
         } break;
     }
 }
+
+void transportStackSingleSetInternetSimulationMode(TransportStackSingle* self,
+                                                   TransportStackInternetSimulationMode mode)
+{
+    transportStackConclaveSetInternetSimulationMode(&self->conclave, mode);
+}

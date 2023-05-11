@@ -9,11 +9,13 @@
 #include <hazy/transport.h>
 #include <transport-stack/conclave.h>
 #include <udp-client/udp_client.h>
-#include <udp-transport/multi_single.h>
 #include <udp-connections-client/client.h>
+#include <udp-transport/multi_single.h>
 
 struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
+
+
 
 typedef struct TransportStackSingle {
     TransportStackConclave conclave;
@@ -24,6 +26,7 @@ typedef struct TransportStackSingle {
     Clog log;
     TransportStackMode mode;
     UdpConnectionsClient connectionsClient;
+
 } TransportStackSingle;
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,
@@ -31,5 +34,7 @@ void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocato
 int transportStackSingleConnect(TransportStackSingle* self, const char* host, size_t port);
 bool transportStackSingleIsConnected(const TransportStackSingle* self);
 void transportStackSingleUpdate(TransportStackSingle* self);
+void transportStackSingleSetInternetSimulationMode(TransportStackSingle* self,
+                                                   TransportStackInternetSimulationMode mode);
 
 #endif
