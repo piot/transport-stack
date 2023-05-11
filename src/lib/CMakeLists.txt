@@ -18,8 +18,6 @@ endif()
 
 set(DEPS ../../deps/)
 
-add_subdirectory("${DEPS}piot/udp-server-connections/src/lib/" temp)
-
 file(GLOB_RECURSE deps_src FOLLOW_SYMLINKS "${DEPS}*/*/src/lib/*.c"
      "${DEPS}*/*/src/platform/posix/*.c")
 
@@ -80,6 +78,8 @@ target_include_directories(transport_stack
                            PUBLIC ${DEPS}piot/conclave-serialize-c/src/include)
 target_include_directories(
   transport_stack PUBLIC ${DEPS}piot/udp-connections-serialize/src/include)
+target_include_directories(
+  transport_stack PUBLIC ${DEPS}piot/udp-server-connections/src/include)
 target_include_directories(
   transport_stack PUBLIC ${DEPS}piot/udp-connections-client-c/src/include)
 target_include_directories(transport_stack
