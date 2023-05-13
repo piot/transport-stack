@@ -5,6 +5,20 @@
 #include <transport-stack/single.h>
 #include <transport-stack/types.h>
 
+static int transportStackSingleTick(void* _self)
+{
+    TransportStackSingle* self = (TransportStackSingle*) _self;
+
+    switch (self->mode) {
+        case TransportStackModeLocalUdp: {
+            udpConnectionsClientUpdate(&self->connectionsClient);
+            hazyDatagramTransportInOutUpdate(&self->conclave.hazyTransport);
+        } break;
+    }
+
+    return 0;
+}
+
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,
                               struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log)
 {
@@ -12,6 +26,8 @@ void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocato
     self->mode = mode;
     self->allocator = allocator;
     self->allocatorWithFree = allocatorWithFree;
+    const size_t targetDeltaTimeMs = 16U;
+    timeTickInit(&self->timeTick, targetDeltaTimeMs, self, transportStackSingleTick, monotonicTimeMsNow(), log);
 }
 
 int transportStackSingleConnect(TransportStackSingle* self, const char* host, size_t port)
@@ -66,12 +82,7 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
 
 void transportStackSingleUpdate(TransportStackSingle* self)
 {
-    switch (self->mode) {
-        case TransportStackModeLocalUdp: {
-            udpConnectionsClientUpdate(&self->connectionsClient);
-            hazyDatagramTransportInOutUpdate(&self->conclave.hazyTransport);
-        } break;
-    }
+    timeTickUpdate(&self->timeTick, monotonicTimeMsNow());
 }
 
 void transportStackSingleSetInternetSimulationMode(TransportStackSingle* self,

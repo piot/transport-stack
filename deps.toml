@@ -30,3 +30,7 @@ version = "*"
 [[dependencies]]
 name = "piot/udp-connections-client-c"
 version = "*"
+
+[[dependencies]]
+name = "piot/time-tick-c"
+version = "*"

@@ -7,6 +7,7 @@
 
 #include <conclave-client/network_realizer.h>
 #include <hazy/transport.h>
+#include <time-tick/time_tick.h>
 #include <transport-stack/conclave.h>
 #include <udp-client/udp_client.h>
 #include <udp-connections-client/client.h>
@@ -14,8 +15,6 @@
 
 struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
-
-
 
 typedef struct TransportStackSingle {
     TransportStackConclave conclave;
@@ -26,7 +25,7 @@ typedef struct TransportStackSingle {
     Clog log;
     TransportStackMode mode;
     UdpConnectionsClient connectionsClient;
-
+    TimeTick timeTick;
 } TransportStackSingle;
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,

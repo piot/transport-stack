@@ -84,4 +84,7 @@ target_include_directories(
   transport_stack PUBLIC ${DEPS}piot/udp-connections-client-c/src/include)
 target_include_directories(transport_stack
                            PUBLIC ${DEPS}piot/secure-random-c/src/include)
+target_include_directories(transport_stack
+                           PUBLIC ${DEPS}piot/time-tick-c/src/include)
+
 target_include_directories(transport_stack PUBLIC ../include)
