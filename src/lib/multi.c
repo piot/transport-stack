@@ -9,14 +9,19 @@ void transportStackMultiUpdate(TransportStackMulti* self)
     switch (self->mode) {
         case TransportStackModeLocalUdp: {
         } break;
+        case TransportStackModeConclave: {
+            transportStackConclaveUpdate(&self->conclave);
+        } break;
     }
 }
 
-int transportStackMultiInit(TransportStackMulti* self, TransportStackMode mode, Clog log)
+int transportStackMultiInit(TransportStackMulti* self, struct ImprintAllocator* allocator,
+                            struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log)
 {
     self->log = log;
     self->mode = mode;
-
+    self->allocatorWithFree = allocatorWithFree;
+    self->allocator = allocator;
     CLOG_C_DEBUG(&self->log, "initializing multi transport for mode %d", mode)
 
     return 0;
@@ -33,6 +38,8 @@ int transportStackMultiListen(TransportStackMulti* self, const char* host, size_
             conclaveSetup.mode = TransportStackModeConclave;
             conclaveSetup.username = "Piot";
             transportStackConclaveInit(&self->conclave, conclaveSetup);
+            transportStackConclaveEstablish(&self->conclave, host, port);
+            self->multiTransport = self->conclave.conclaveClient.client.multiTransport;
         } break;
         case TransportStackModeLocalUdp: {
             int errorCode = udpServerInit(&self->udpServer, port, false);

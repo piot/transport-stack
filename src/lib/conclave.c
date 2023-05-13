@@ -68,6 +68,7 @@ void transportStackConclaveUpdate(TransportStackConclave* self)
 {
     if (self->mode == TransportStackModeConclave) {
         clvClientRealizeUpdate(&self->conclaveClient, monotonicTimeMsNow());
+        hazyDatagramTransportInOutUpdate(&self->hazyTransport);
     }
 }
 

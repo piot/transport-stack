@@ -26,7 +26,8 @@ typedef struct TransportStackMulti {
     Clog log;
 } TransportStackMulti;
 
-int transportStackMultiInit(TransportStackMulti* self, TransportStackMode mode, Clog log);
+int transportStackMultiInit(TransportStackMulti* self, struct ImprintAllocator* allocator,
+                            struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log);
 void transportStackMultiUpdate(TransportStackMulti* self);
 int transportStackMultiListen(TransportStackMulti* self, const char* host, size_t port);
 

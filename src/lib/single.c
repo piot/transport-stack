@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 #include <transport-stack/single.h>
-#include <transport-stack/types.h>
 
 static int transportStackSingleTick(void* _self)
 {
@@ -13,6 +12,9 @@ static int transportStackSingleTick(void* _self)
         case TransportStackModeLocalUdp: {
             udpConnectionsClientUpdate(&self->connectionsClient);
             hazyDatagramTransportInOutUpdate(&self->conclave.hazyTransport);
+        } break;
+        case TransportStackModeConclave: {
+            transportStackConclaveUpdate(&self->conclave);
         } break;
     }
 
@@ -55,8 +57,18 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
         } break;
         case TransportStackModeConclave: {
             CLOG_C_DEBUG(&self->log, "connecting conclave to '%s' %d", host, port)
+            TransportStackConclaveSetup setup;
+            setup.allocator = self->allocator;
+            setup.allocatorWithFree = self->allocatorWithFree;
+            setup.mode = TransportStackModeConclave;
+            setup.username = "";
+            setup.log.config = self->log.config;
+            setup.log.constantPrefix = "singleUdp";
+            transportStackConclaveInit(&self->conclave, setup);
+            transportStackConclaveEstablish(&self->conclave, host, port);
             datagramTransportSingleToFromMultiInit(&self->sendAndReceiveOnlyFromHost,
                                                    self->conclave.conclaveClient.client.multiTransport, 0);
+            self->singleTransport = self->sendAndReceiveOnlyFromHost.transport;
         } break;
         default:
             CLOG_C_ERROR(&self->log, "unknown mode %d", self->mode)
@@ -82,6 +94,7 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
 
 void transportStackSingleUpdate(TransportStackSingle* self)
 {
+
     timeTickUpdate(&self->timeTick, monotonicTimeMsNow());
 }
 
