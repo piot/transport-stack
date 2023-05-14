@@ -10,7 +10,7 @@ static int udpClientTransportSend(void* _self, const uint8_t* data, size_t size)
     return udpClientSend(&self->udpClient, data, size);
 }
 
-static int udpClientSideReceive(void* _self, uint8_t* data, size_t size)
+static ssize_t udpClientSideReceive(void* _self, uint8_t* data, size_t size)
 {
     TransportStackConclave* self = _self;
     return udpClientReceive(&self->udpClient, data, size);
@@ -35,7 +35,7 @@ static int addHazyAndConclaveOnTopOfTransport(TransportStackConclave* self, stru
 int transportStackConclaveInit(TransportStackConclave* self, TransportStackConclaveSetup conclaveSetup)
 {
     self->log = conclaveSetup.log;
-    udpTransportInit(&self->udpClientTransport, self, udpClientTransportSend, udpClientSideReceive);
+    datagramTransportInit(&self->udpClientTransport, self, udpClientTransportSend, udpClientSideReceive);
 
     addHazyAndConclaveOnTopOfTransport(self, conclaveSetup.allocator, conclaveSetup.allocatorWithFree);
 

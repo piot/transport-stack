@@ -11,7 +11,7 @@
 #include <transport-stack/conclave.h>
 #include <udp-client/udp_client.h>
 #include <udp-connections-client/client.h>
-#include <udp-transport/multi_single.h>
+#include <datagram-transport/multi_single.h>
 
 struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
@@ -21,7 +21,7 @@ typedef struct TransportStackSingle {
     struct ImprintAllocatorWithFree* allocatorWithFree;
     struct ImprintAllocator* allocator;
     DatagramTransportSingleToFromMulti sendAndReceiveOnlyFromHost;
-    UdpTransportInOut singleTransport;
+    DatagramTransport singleTransport;
     Clog log;
     TransportStackMode mode;
     UdpConnectionsClient connectionsClient;

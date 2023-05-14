@@ -16,11 +16,11 @@ struct ImprintAllocator;
 
 typedef struct TransportStackMulti {
     TransportStackConclave conclave;
-    DatagramTransportMultiInOut multiTransport;
+    DatagramTransportMulti multiTransport;
     struct ImprintAllocatorWithFree* allocatorWithFree;
     struct ImprintAllocator* allocator;
     UdpServerSocket udpServer;
-    UdpTransportInOut udpServerTransport;
+    DatagramTransport udpServerTransport;
     UdpServerConnections udpServerConnections;
     TransportStackMode mode;
     Clog log;

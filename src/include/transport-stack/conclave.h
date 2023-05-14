@@ -9,7 +9,7 @@
 #include <hazy/transport.h>
 #include <transport-stack/types.h>
 #include <udp-client/udp_client.h>
-#include <udp-transport/multi_single.h>
+#include <datagram-transport/multi_single.h>
 
 typedef enum TransportStackInternetSimulationMode {
     TransportStackInternetSimulationModeGood,
@@ -20,7 +20,7 @@ typedef enum TransportStackInternetSimulationMode {
 typedef struct TransportStackConclave {
     ClvClientRealize conclaveClient;
     UdpClientSocket udpClient;
-    UdpTransportInOut udpClientTransport;
+    DatagramTransport udpClientTransport;
     TransportStackMode mode;
     HazyDatagramTransportInOut hazyTransport;
     Clog log;

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     multiLog.config = &g_clog;
     multiLog.constantPrefix = "multi";
 
-    transportStackMultiInit(&multi, TransportStackModeLocalUdp, multiLog);
+    transportStackMultiInit(&multi, allocator, allocatorWithFree, TransportStackModeLocalUdp, multiLog);
     transportStackMultiListen(&multi, "", 27003);
 
     TransportStackSingle single;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     for (size_t i = 0; i < 50; ++i) {
         usleep(16 * 1000);
         transportStackSingleUpdate(&single);
-        int received = udpTransportReceive(&single.singleTransport, targetBuf, IN_BUF_SIZE_OCTET_COUNT);
+        int received = datagramTransportReceive(&single.singleTransport, targetBuf, IN_BUF_SIZE_OCTET_COUNT);
         if (received < 0) {
             return received;
         }
@@ -61,14 +61,15 @@ int main(int argc, char* argv[])
             sendTick++;
             CLOG_INFO("sending '%s' from single to multi transport", targetBuf)
 
-            udpTransportSend(&single.singleTransport, targetBuf, tc_strlen(targetBuf)+ 1);
+            datagramTransportSend(&single.singleTransport, targetBuf, tc_strlen(targetBuf) + 1);
         }
         transportStackMultiUpdate(&multi);
         int foundConnectionIndex;
-        int octetCount = datagramTransportMultiReceive(&multi.multiTransport, &foundConnectionIndex, targetBuf,
+        int octetCount = datagramTransportMultiReceiveFrom(&multi.multiTransport, &foundConnectionIndex, targetBuf,
                                                        IN_BUF_SIZE_OCTET_COUNT);
         if (octetCount > 0) {
-            CLOG_INFO("received '%s' (octetCount:%d) on multi transport, from single connection %d", targetBuf, octetCount, foundConnectionIndex);
+            CLOG_INFO("received '%s' (octetCount:%d) on multi transport, from single connection %d", targetBuf,
+                      octetCount, foundConnectionIndex);
         }
     }
 

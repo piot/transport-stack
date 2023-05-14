@@ -71,7 +71,7 @@ target_include_directories(transport_stack
 target_include_directories(transport_stack
                            PUBLIC ${DEPS}piot/monotonic-time-c/src/include)
 target_include_directories(transport_stack
-                           PUBLIC ${DEPS}piot/udp-transport/src/include)
+                           PUBLIC ${DEPS}piot/datagram-transport-c/src/include)
 target_include_directories(transport_stack
                            PUBLIC ${DEPS}piot/conclave-client-c/src/include)
 target_include_directories(transport_stack
