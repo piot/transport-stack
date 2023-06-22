@@ -55,7 +55,7 @@ int transportStackConclaveInit(TransportStackConclave* self, TransportStackConcl
 
 int transportStackConclaveEstablish(TransportStackConclave* self, const char* host, size_t port)
 {
-    CLOG_C_DEBUG(&self->log, "establish udp client to %s %d", host, port)
+    CLOG_C_DEBUG(&self->log, "establish udp client to %s %zu", host, port)
     int errorCode = udpClientInit(&self->udpClient, host, port);
     if (errorCode < 0) {
         CLOG_ERROR("could not start udp client")

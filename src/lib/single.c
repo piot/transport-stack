@@ -36,7 +36,7 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
 {
     switch (self->mode) {
         case TransportStackModeLocalUdp: {
-            CLOG_C_DEBUG(&self->log, "connecting to '%s' %d. reusing conclave for udp client connection", host, port)
+            CLOG_C_DEBUG(&self->log, "connecting to '%s' %zu. reusing conclave for udp client connection", host, port)
             // Reuse conclave for udp client part
             TransportStackConclaveSetup setup;
             setup.allocator = self->allocator;
@@ -56,7 +56,7 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
             self->singleTransport = self->connectionsClient.transport;
         } break;
         case TransportStackModeConclave: {
-            CLOG_C_DEBUG(&self->log, "connecting conclave to '%s' %d", host, port)
+            CLOG_C_DEBUG(&self->log, "connecting conclave to '%s' %zu", host, port)
             TransportStackConclaveSetup setup;
             setup.allocator = self->allocator;
             setup.allocatorWithFree = self->allocatorWithFree;
@@ -85,7 +85,7 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
             return self->connectionsClient.phase == UdpConnectionsClientPhaseConnected;
             break;
         case TransportStackModeConclave:
-            return false;
+            return self->conclave.conclaveClient.state == ClvClientRealizeStateJoinRoom;
             break;
         default:
             CLOG_C_ERROR(&self->log, "unknown mode")
@@ -94,7 +94,9 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
 
 void transportStackSingleUpdate(TransportStackSingle* self)
 {
-
+    if (self->mode == TransportStackModeConclave) {
+        transportStackConclaveUpdate(&self->conclave);
+    }
     timeTickUpdate(&self->timeTick, monotonicTimeMsNow());
 }
 

@@ -44,10 +44,10 @@ int transportStackMultiListen(TransportStackMulti* self, const char* host, size_
         case TransportStackModeLocalUdp: {
             int errorCode = udpServerInit(&self->udpServer, port, false);
             if (errorCode < 0) {
-                CLOG_C_ERROR(&self->log, "could not host on port %d", port)
+                CLOG_C_ERROR(&self->log, "could not host on port %zu", port)
                 return errorCode;
             }
-            CLOG_C_DEBUG(&self->log, "listening on UDP port %d", port);
+            CLOG_C_DEBUG(&self->log, "listening on UDP port %zu", port);
 
             udpServerConnectionsInit(&self->udpServerConnections, &self->udpServer, self->log);
             CLOG_C_DEBUG(&self->log, "UDP multi connections server is initialized");
