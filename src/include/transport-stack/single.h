@@ -5,19 +5,19 @@
 #ifndef TRANSPORT_STACK_SINGLE_H
 #define TRANSPORT_STACK_SINGLE_H
 
-#include <conclave-client/network_realizer.h>
+#include <datagram-transport/multi_single.h>
 #include <hazy/transport.h>
+#include <relay-client/client.h>
 #include <time-tick/time_tick.h>
-#include <transport-stack/conclave.h>
+#include <transport-stack/lower_level.h>
 #include <udp-client/udp_client.h>
 #include <udp-connections-client/client.h>
-#include <datagram-transport/multi_single.h>
 
 struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
 
 typedef struct TransportStackSingle {
-    TransportStackConclave conclave;
+    TransportStackLowerLevel lowerLevel;
     struct ImprintAllocatorWithFree* allocatorWithFree;
     struct ImprintAllocator* allocator;
     DatagramTransportSingleToFromMulti sendAndReceiveOnlyFromHost;
@@ -25,7 +25,9 @@ typedef struct TransportStackSingle {
     Clog log;
     TransportStackMode mode;
     UdpConnectionsClient connectionsClient;
+    RelayClient relayClient;
     TimeTick timeTick;
+    RelaySerializeUserSessionId userSessionIdForRelay;
 } TransportStackSingle;
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,

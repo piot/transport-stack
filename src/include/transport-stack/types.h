@@ -5,6 +5,6 @@
 #ifndef TRANSPORT_STACK_TYPES
 #define TRANSPORT_STACK_TYPES
 
-typedef enum TransportStackMode { TransportStackModeConclave, TransportStackModeLocalUdp } TransportStackMode;
+typedef enum TransportStackMode { TransportStackModeLocalUdp, TransportStackModeRelay } TransportStackMode;
 
 #endif

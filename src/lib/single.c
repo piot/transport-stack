@@ -11,12 +11,12 @@ static int transportStackSingleTick(void* _self)
     switch (self->mode) {
         case TransportStackModeLocalUdp: {
             udpConnectionsClientUpdate(&self->connectionsClient);
-            hazyDatagramTransportInOutUpdate(&self->conclave.hazyTransport);
         } break;
-        case TransportStackModeConclave: {
-            transportStackConclaveUpdate(&self->conclave);
+        case TransportStackModeRelay: {
+            relayClientUpdate(&self->relayClient, self->timeTick.tickedUpToMonotonic);
         } break;
     }
+    hazyDatagramTransportInOutUpdate(&self->lowerLevel.hazyTransport);
 
     return 0;
 }
@@ -36,7 +36,7 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
 {
     switch (self->mode) {
         case TransportStackModeLocalUdp: {
-            CLOG_C_DEBUG(&self->log, "connecting to '%s' %zu. reusing conclave for udp client connection", host, port)
+            CLOG_C_DEBUG(&self->log, "connecting to '%s' %zu. using udp connections client", host, port)
             // Reuse conclave for udp client part
             TransportStackConclaveSetup setup;
             setup.allocator = self->allocator;
@@ -45,34 +45,21 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
             setup.username = "";
             setup.log.config = self->log.config;
             setup.log.constantPrefix = "singleUdp";
-            transportStackConclaveInit(&self->conclave, setup);
-            transportStackConclaveEstablish(&self->conclave, host, port);
+            transportStackLowerLevelInit(&self->lowerLevel, setup);
+            transportStackLowerLevelEstablish(&self->lowerLevel, host, port);
             CLOG_C_DEBUG(&self->log, "udp connections client is put on top of hazy internet emulator");
-            int initErr = udpConnectionsClientInit(&self->connectionsClient, self->conclave.hazyTransport.transport,
+            int initErr = udpConnectionsClientInit(&self->connectionsClient, self->lowerLevel.hazyTransport.transport,
                                                    self->log);
             if (initErr < 0) {
                 return initErr;
             }
             self->singleTransport = self->connectionsClient.transport;
         } break;
-        case TransportStackModeConclave: {
-            CLOG_C_DEBUG(&self->log, "connecting conclave to '%s' %zu", host, port)
-            TransportStackConclaveSetup setup;
-            setup.allocator = self->allocator;
-            setup.allocatorWithFree = self->allocatorWithFree;
-            setup.mode = TransportStackModeConclave;
-            setup.username = "";
-            setup.log.config = self->log.config;
-            setup.log.constantPrefix = "singleUdp";
-            transportStackConclaveInit(&self->conclave, setup);
-            transportStackConclaveEstablish(&self->conclave, host, port);
-            datagramTransportSingleToFromMultiInit(&self->sendAndReceiveOnlyFromHost,
-                                                   self->conclave.conclaveClient.client.multiTransport, 0);
-            self->singleTransport = self->sendAndReceiveOnlyFromHost.transport;
+        case TransportStackModeRelay: {
+            CLOG_C_DEBUG(&self->log, "connecting to '%s' %zu, using relay", host, port)
+            relayClientInit(&self->relayClient, self->userSessionIdForRelay, self->lowerLevel.hazyTransport.transport,
+                            self->allocator, "prefix", self->log);
         } break;
-        default:
-            CLOG_C_ERROR(&self->log, "unknown mode %d", self->mode)
-            break;
     }
 
     return 0;
@@ -83,25 +70,18 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
     switch (self->mode) {
         case TransportStackModeLocalUdp:
             return self->connectionsClient.phase == UdpConnectionsClientPhaseConnected;
-            break;
-        case TransportStackModeConclave:
-            return self->conclave.conclaveClient.state == ClvClientRealizeStateJoinRoom;
-            break;
-        default:
-            CLOG_C_ERROR(&self->log, "unknown mode")
+            case TransportStackModeRelay:
+            return false;
     }
 }
 
 void transportStackSingleUpdate(TransportStackSingle* self)
 {
-    if (self->mode == TransportStackModeConclave) {
-        transportStackConclaveUpdate(&self->conclave);
-    }
     timeTickUpdate(&self->timeTick, monotonicTimeMsNow());
 }
 
 void transportStackSingleSetInternetSimulationMode(TransportStackSingle* self,
                                                    TransportStackInternetSimulationMode mode)
 {
-    transportStackConclaveSetInternetSimulationMode(&self->conclave, mode);
+    transportStackLowerLevelSetInternetSimulationMode(&self->lowerLevel, mode);
 }

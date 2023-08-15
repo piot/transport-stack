@@ -8,19 +8,7 @@ name = "piot/udp-server-c"
 version = "*"
 
 [[dependencies]]
-name = "piot/udp-server-connections"
-version = "*"
-
-[[dependencies]]
 name = "piot/udp-client-c"
-version = "*"
-
-[[dependencies]]
-name = "piot/hazy-c"
-version = "*"
-
-[[dependencies]]
-name = "piot/conclave-client-c"
 version = "*"
 
 [[dependencies]]
@@ -29,6 +17,14 @@ version = "*"
 
 [[dependencies]]
 name = "piot/udp-connections-client-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/hazy-c"
+version = "*"
+
+[[dependencies]]
+name = "piot/relay-client-c"
 version = "*"
 
 [[dependencies]]

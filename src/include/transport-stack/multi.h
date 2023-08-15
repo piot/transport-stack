@@ -5,8 +5,7 @@
 #ifndef TRANSPORT_STACK_MULTI_H
 #define TRANSPORT_STACK_MULTI_H
 
-#include <conclave-client/network_realizer.h>
-#include <transport-stack/conclave.h>
+#include <transport-stack/lower_level.h>
 #include <transport-stack/types.h>
 #include <udp-client/udp_client.h>
 #include <udp-server-connections/connections.h>
@@ -15,7 +14,6 @@ struct ImprintAllocatorWithFree;
 struct ImprintAllocator;
 
 typedef struct TransportStackMulti {
-    TransportStackConclave conclave;
     DatagramTransportMulti multiTransport;
     struct ImprintAllocatorWithFree* allocatorWithFree;
     struct ImprintAllocator* allocator;
