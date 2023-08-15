@@ -36,13 +36,13 @@ int transportStackMultiListen(TransportStackMulti* self, const char* host, size_
                 CLOG_C_ERROR(&self->log, "could not host on port %zu", port)
                 // return errorCode;
             }
-            CLOG_C_DEBUG(&self->log, "listening on UDP port %zu", port);
+            CLOG_C_DEBUG(&self->log, "listening on UDP port %zu", port)
 
             udpServerConnectionsInit(&self->udpServerConnections, &self->udpServer, self->log);
-            CLOG_C_DEBUG(&self->log, "UDP multi connections server is initialized");
+            CLOG_C_DEBUG(&self->log, "UDP multi connections server is initialized")
 
             self->multiTransport = self->udpServerConnections.multiTransport;
-        }
+        } break;
         case TransportStackModeRelay:
             break;
     }
