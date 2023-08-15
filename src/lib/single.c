@@ -47,7 +47,7 @@ int transportStackSingleConnect(TransportStackSingle* self, const char* host, si
             setup.log.constantPrefix = "singleUdp";
             transportStackLowerLevelInit(&self->lowerLevel, setup);
             transportStackLowerLevelEstablish(&self->lowerLevel, host, port);
-            CLOG_C_DEBUG(&self->log, "udp connections client is put on top of hazy internet emulator");
+            CLOG_C_DEBUG(&self->log, "udp connections client is put on top of hazy internet emulator")
             int initErr = udpConnectionsClientInit(&self->connectionsClient, self->lowerLevel.hazyTransport.transport,
                                                    self->log);
             if (initErr < 0) {
