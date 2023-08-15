@@ -11,6 +11,5 @@ CMakeFiles/
 build/
 Makefile
 *.a
-*.cmake
 CMakeCache.txt
 src/examples/transport_stack_example
