@@ -24,7 +24,7 @@ name = "piot/hazy-c"
 version = "*"
 
 [[dependencies]]
-name = "piot/relay-client-c"
+name = "game-relay/client-c"
 version = "*"
 
 [[dependencies]]

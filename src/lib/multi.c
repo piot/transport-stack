@@ -1,7 +1,7 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Peter Bjorklund. All rights reserved.
+/*----------------------------------------------------------------------------------------------------------
+ *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/transport-stack
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------------------------------------*/
 #include <transport-stack/multi.h>
 
 void transportStackMultiUpdate(TransportStackMulti* self)
@@ -21,7 +21,7 @@ int transportStackMultiInit(TransportStackMulti* self, struct ImprintAllocator* 
     self->mode = mode;
     self->allocatorWithFree = allocatorWithFree;
     self->allocator = allocator;
-    CLOG_C_DEBUG(&self->log, "initializing multi transport for mode %d", mode)
+    CLOG_C_DEBUG(&self->log, "initializing multi transport for mode %d. Still needs a listen call.", mode)
 
     return 0;
 }
