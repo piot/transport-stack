@@ -22,7 +22,8 @@ static int transportStackSingleTick(void* _self)
 }
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,
-                              struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log)
+                              struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode,
+                              bool useTimeTickQualityChecks, Clog log)
 {
     self->log = log;
     self->mode = mode;
@@ -30,6 +31,7 @@ void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocato
     self->allocatorWithFree = allocatorWithFree;
     const size_t targetDeltaTimeMs = 16U;
     timeTickInit(&self->timeTick, targetDeltaTimeMs, self, transportStackSingleTick, monotonicTimeMsNow(), log);
+    timeTickSetQualityCheckEnabled(&self->timeTick, useTimeTickQualityChecks);
 }
 
 int transportStackSingleConnect(TransportStackSingle* self, const char* host, size_t port)
@@ -70,7 +72,7 @@ bool transportStackSingleIsConnected(const TransportStackSingle* self)
     switch (self->mode) {
         case TransportStackModeLocalUdp:
             return self->connectionsClient.phase == UdpConnectionsClientPhaseConnected;
-            case TransportStackModeRelay:
+        case TransportStackModeRelay:
             return false;
     }
 }

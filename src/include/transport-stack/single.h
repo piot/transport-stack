@@ -28,10 +28,12 @@ typedef struct TransportStackSingle {
     RelayClient relayClient;
     TimeTick timeTick;
     RelaySerializeUserSessionId userSessionIdForRelay;
+
 } TransportStackSingle;
 
 void transportStackSingleInit(TransportStackSingle* self, struct ImprintAllocator* allocator,
-                              struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode, Clog log);
+                              struct ImprintAllocatorWithFree* allocatorWithFree, TransportStackMode mode,
+                              bool useTimeTickQuality, Clog log);
 int transportStackSingleConnect(TransportStackSingle* self, const char* host, size_t port);
 bool transportStackSingleIsConnected(const TransportStackSingle* self);
 void transportStackSingleUpdate(TransportStackSingle* self);
